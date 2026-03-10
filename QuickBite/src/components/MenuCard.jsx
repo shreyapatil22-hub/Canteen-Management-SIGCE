@@ -1,57 +1,77 @@
-import React, { useState, useMemo } from 'react';
-// import { Search, Utensils, Coffee, Pizza, Salad, CheckCircle2, ShoppingBasket, X, Filter } from 'lucide-react';
+import React from 'react';
+const MenuCard = ({ item, onAddToCart }) => {
+    if (!item) {
+        return null;
+    }
 
-const MENU_DATA = [
-    { id: 1, name: "Lemon Tea", price: 10, category: "Beverages", type: "veg", description: "Refreshing tea infused with fresh lemon and mint." },
-    { id: 2, name: "Black Tea", price: 15, category: "Beverages", type: "veg", description: "Strong and aromatic black tea served hot or cold." },
-    { id: 3, name: "Coffee with/ without sugar", price: 15, category: "Beverages", type: "veg", description: "Freshly brewed coffee served with or without sugar." },
-    { id: 4, name: "Cold Coffee", price: 15, category: "Beverages", type: "veg", description: "Chilled milk blended with premium coffee and a scoop of vanilla." },
-    { id: 5, name: "Lemon Juice", price: 15, category: "Beverages", type: "veg", description: "Freshly squeezed lemon juice with a hint of mint." },
-    { id: 6, name: "Chass", price: 15, category: "Beverages", type: "veg", description: "Traditional Indian buttermilk with spices and herbs." },
-    { id: 7, name: "Poha", price: 20, category: "Breakfast", type: "veg", description: "Flattened rice cooked with turmeric, onions, and spices." },
-    { id: 8, name: "Upma", price: 20, category: "Breakfast", type: "veg", description: "Indian breakfast dish made with semolina and spices." },
-    { id: 9, name: "Idli Sambar", price: 30, category: "Main Course", type: "veg", description: "Steamed rice cakes served with sambar and coconut chutney." },
-    { id: 10, name: "Misal Pav", price: 40, category: "Main Course", type: "veg", description: "Spicy Maharashtrian curry served with pav." },
-    { id: 11, name: "Vada Usal Pav", price: 40, category: "Main Course", type: "veg", description: "Spicy potato fritter sandwiched in a bun." },
-    { id: 12, name: "Methi Paratha", price: 35, category: "Main Course", type: "veg", description: "Flavorful paratha made with methi (fenugreek) leaves." },
-    { id: 13, name: "Aloo Paratha", price: 40, category: "Main Course", type: "veg", description: "Soft paratha stuffed with spiced potatoes and onions." },
-    { id: 14, name: "Sabudana Wada", price: 35, category: "Main Course", type: "veg", description: "Crispy fritters made from sago pearls and spices." },
-    { id: 15, name: "Vada pav", price: 20, category: "Fast Food", type: "veg", description: "Spicy potato fritter served in a soft bun with chutney." }
-    { id: 16, name: "Samosa", price: 15, category: "Fast Food", type: "veg", description: "Crispy pastry filled with spiced potatoes and peas." },
-    { id: 17, name: "Samosa Pav", price: 20, category: "Fast Food", type: "veg", description: "Samosa served in a soft bun with chutney." },
-    { id: 18, name: "Bread Pattice", price: 20, category: "Fast Food", type: "veg", description: "Crispy bread pattice served with chutney." },
-    { id: 19, name: "Kanda Bhajji", price: 25, category: "Fast Food", type: "veg", description: "Crispy fritters made with onions and gram flour." },
-    { id: 20, name: "Batata Bhajji", price: 30, category: "Fast Food", type: "veg", description: "Crispy fritters made with potatoes and gram flour." },
-    { id: 21, name: "Moong Dal Bhajji", price: 40, category: "Fast Food", type: "veg", description: "Crispy fritters made with moong dal and gram flour." },
-    { id: 22, name: "Manchurian", price: 20, category: "Fast Food", type: "veg", description: "Crispy fried vegetable balls in a spicy sauce." },
-    { id: 23, name: "Chinese Bhel", price: 30, category: "Fast Food", type: "veg", description: "Crispy fritters made with Chinese vegetables and spices." },
-    { id: 24, name: "Maggie", price: 25, category: "Fast Food", type: "veg", description: "Instant noodles cooked with vegetables and spices." },
-    { id: 25, name: "Masala Maggie", price: 30, category: "Fast Food", type: "veg", description: "Spicy vegetable curry served with buttered pav." },
-    { id: 26, name: "Veg Sandwich", price: 30, category: "Fast Food", type: "veg", description: "Spicy vegetable sandwich served with chutney." },
-    { id: 27, name: "Veg Sandwich with cheese", price: 40, category: "Fast Food", type: "veg", description: "Spicy vegetable sandwich with cheese served with chutney." },
-    { id: 28, name: "Dal", price: 25, category: "Main Course", type: "veg", description: "Spiced lentils served with rice or roti." },
-    { id: 29, name: "Chapati", price: 8, category: "Main Course", type: "veg", description: "Soft, round flatbread made from whole wheat flour." },
-    { id: 30, name: "Bhaji", price: 25, category: "Main Course", type: "veg", description: "Spiced lentils served with chutney." },
-    { id: 31, name: "Jeera Rice", price: 25, category: "Main Course", type: "veg", description: "Spiced rice cooked with cumin and other spices." },
-    { id: 32, name: "Mini Thali", price: 50, category: "Main Course", type: "veg", description: "A small thali with a variety of dishes including dal, roti, and chutney." },
-    { id: 33, name: "Full Thali", price: 80, category: "Main Course", type: "veg", description: "A full thali with a variety of dishes including dal, roti, rice, and chutney." },
-    { id: 34, name: "Special Thali", price: 125, category: "Main Course", type: "veg", description: "A special thali with a variety of dishes including dal, roti, rice, and sweet dish." },
-    { id: 35, name: "Pulav Rice (Full Plate)", price: 75, category: "Main Course", type: "veg", description: "Spiced rice served with a variety of vegetables and spices." },
-    { id: 36, name: "Pulav Rice (Half Plate)", price: 40, category: "Main Course", type: "veg", description: "Spiced rice served with a variety of vegetables and spices." },
-    { id: 37, name: "Fried Rice (Full Plate)", price: 70, category: "Main Course", type: "veg", description: "Crispy fried rice served with vegetables and spices." },
-    { id: 38, name: "Fried Rice (Half Plate)", price: 50, category: "Main Course", type: "veg", description: "Crispy fried rice served with vegetables and spices." },
-    { id: 39, name: "Noodles", price: 50, category: "Main Course", type: "veg", description: "Crispy noodles served with vegetables and spices." },
-    { id: 40, name: "Pasta", price: 50, category: "Main Course", type: "veg", description: "Crispy pasta served with vegetables and sauces." },
-    { id: 41, name: "Boiled Egg", price: 15, category: "Main Course", type: "Non-veg", description: "Boiled egg" },
-    { id: 42, name: "Omlete Pav (1 Egg)", price: 40, category: "Main Course", type: "Non-veg", description: "Omlete served with pav." },
-    { id: 43, name: "Omlete Pav (2 Egg)", price: 60, category: "Main Course", type: "Non-veg", description: "Omlete served with pav." },
-    { id: 44, name: "Egg Bhurji (1 Egg)", price: 50, category: "Main Course", type: "Non-veg", description: "Spicy scrambled eggs with onions and spices." },
-    { id: 45, name: "Egg Bhurji (2 Egg)", price: 60, category: "Main Course", type: "Non-veg", description: "Spicy scrambled eggs with onions and spices." },
-    { id: 46, name: "Murmura Bhel", price: 20, category: "Main Course", type: "veg", description: "Crispy murmura served with chutney and vegetables." },
-    { id: 47, name: "Boiled Chana Bhel", price: 30, category: "Main Course", type: "veg", description: "Boiled chana served with chutney and vegetables." },
-    { id: 48, name: "Sada Dosa", price: 60, category: "Main Course", type: "veg", description: "Soft, fluffy dosa served with sambar and chutney." },
-    { id: 49, name: "Masala Dosa", price: 60, category: "Main Course", type: "veg", description: "Soft, fluffy dosa filled with spiced potatoes and onions, served with sambar and chutney." },
-    { id: 50, name: "Onion Uttapam", price: 40, category: "Main Course", type: "veg", description: "Soft, fluffy uttapam made with onions and served with sambar and chutney." }
-];
+    const {
+        name = "Unknown Item",
+        price = 0,
+        category = "General",
+        isVeg = true,
+        available = false
+    } = item;
 
-const CATEGORIES = ["All", "Breakfast", "Main Course", "Fast Food", "Beverages"];
+    // Function to handle add to cart click
+    const handleAdd = () => {
+        if (available && onAddToCart) {
+            onAddToCart(item);
+        }
+    };
+
+    return (
+        <div className={`relative flex flex-col p-4 rounded-2xl border transition-all duration-300 ${available
+            ? 'bg-white border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-1'
+            : 'bg-slate-50 border-slate-100 opacity-75'
+            }`}>
+
+            {/* Veg/Non-Veg Indicator */}
+            <div className="flex justify-between items-start mb-2">
+                <div className={`w-5 h-5 border-2 flex items-center justify-center rounded-sm ${isVeg ? 'border-green-600' : 'border-red-600'}`}>
+                    <div className={`w-2.5 h-2.5 rounded-full ${isVeg ? 'bg-green-600' : 'bg-red-600'}`}></div>
+                </div>
+                {!available && (
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">
+                        Out of Stock
+                    </span>
+                )}
+            </div>
+
+            {/* Item Details */}
+            <div className="flex-1">
+                <h3 className="font-bold text-slate-800 text-lg leading-tight mb-1">{name}</h3>
+                <p className="text-slate-500 text-xs font-medium uppercase tracking-wide">{category}</p>
+            </div>
+
+            {/* Price and Action */}
+            <div className="mt-4 flex items-center justify-between">
+                <div className="flex flex-col">
+                    <span className="text-sm text-slate-400 font-medium">Price</span>
+                    <span className="text-xl font-extrabold text-slate-900">
+                        ₹{price}
+                    </span>
+                </div>
+
+                <button
+                    onClick={handleAdd}
+                    disabled={!available}
+                    className={`px-5 py-2.5 rounded-xl font-bold text-sm transition-all active:scale-95 ${available
+                        ? 'bg-orange-500 text-white hover:bg-orange-600 shadow-lg shadow-orange-200'
+                        : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                        }`}
+                >
+                    {available ? 'Add' : 'Unavailable'}
+                </button>
+            </div>
+
+            {/* Visual background element for decorative purposes */}
+            <div className="absolute top-0 right-0 -z-10 opacity-5 pointer-events-none">
+                <svg width="80" height="80" viewBox="0 0 100 100" fill="currentColor" className="text-slate-400">
+                    <circle cx="90" cy="10" r="40" />
+                </svg>
+            </div>
+        </div>
+    );
+};
+
+export default MenuCard;
